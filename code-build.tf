@@ -104,7 +104,7 @@ resource "aws_codebuild_project" "docker_builder" {
 
   source {
     type            = "GITHUB"
-    location        = "https://github.com/YOUR_USERNAME/YOUR_REPO.git"
+    location        = "https://github.com/jayantachatterjee/ritual_roast.git"
     git_clone_depth = 1
     # By default, it looks for 'buildspec.yml' in the root.
     # If it is elsewhere, specify: buildspec = "path/to/buildspec.yml"
