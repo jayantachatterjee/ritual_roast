@@ -115,8 +115,18 @@ resource "aws_codebuild_project" "ecs_test_docker_builder" {
 # --- 5. Trigger CodeBuild on CodeCommit Push (Optional) ---
 resource "aws_codebuild_webhook" "ecs_test_codebuild_webhook" {
   project_name = aws_codebuild_project.ecs_test_docker_builder.name
-  filter {
-    type    = "EVENT"
-    pattern = "PUSH"
+
+   # This filter ensures the build only triggers on Pushes to the Main branch
+  filter_group {
+    filter {
+      type    = "EVENT"
+      pattern = "PUSH"
+    }
+
+    filter {
+      type    = "HEAD_REF"
+      # Regex for the branch name. Use "^refs/heads/master$" if you still use master
+      pattern = "^refs/heads/main$" 
+    }
   }
 }
