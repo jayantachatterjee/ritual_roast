@@ -69,8 +69,8 @@ resource "aws_iam_role_policy" "codebuild_policy" {
 }
 
 # --- 4. CodeBuild Project ---
-resource "aws_codebuild_project" "docker_builder" {
-  name          = "my-docker-build-project"
+resource "aws_codebuild_project" "ecs_test_docker_builder" {
+  name          = "ecs_test_my-docker-build-project"
   description   = "Builds Docker image and pushes to ECR"
   build_timeout = "5"
   service_role  = aws_iam_role.codebuild_role.arn
@@ -109,5 +109,14 @@ resource "aws_codebuild_project" "docker_builder" {
     buildspec = "buildspec.yml"
     # By default, it looks for 'buildspec.yml' in the root.
     # If it is elsewhere, specify: buildspec = "path/to/buildspec.yml"
+  }
+}
+
+# --- 5. Trigger CodeBuild on CodeCommit Push (Optional) ---
+resource "aws_codebuild_webhook" "ecs_test_codebuild_webhook" {
+  project_name = aws_codebuild_project.ecs_test_docker_builder.name
+  filter {
+    type    = "EVENT"
+    pattern = "PUSH"
   }
 }
