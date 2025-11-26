@@ -6,7 +6,7 @@ RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
 RUN apt-get update && apt-get upgrade -y
 
 # Copy code into image
-COPY . /var/www/html
+COPY project/. /var/www/html
 
 # Apache will run on port 80
 EXPOSE 80
