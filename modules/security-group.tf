@@ -63,3 +63,50 @@ resource "aws_security_group" "ecs_test_db_sg" {
         }
     }
 }
+
+# SG for the Rotation Lambda
+resource "aws_security_group" "ecs_test_lambda_sg" {
+  name        = "secrets-rotation-lambda-sg"
+  description = "Allow Lambda to reach RDS and Secrets Manager"
+  vpc_id      = aws_vpc.ecs_test_vpc.id
+
+  # Allow outbound to RDS (3306)
+  egress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"] # Or reference the RDS SG ID specifically
+  }
+
+  # Allow outbound to VPC Endpoint (443)
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"] # Internal VPC traffic only
+  }
+}
+
+# SG for the VPC Endpoint
+resource "aws_security_group" "ecs_test_vpc_endpoint_sg" {
+  name        = "secrets-manager-vpce-sg"
+  description = "Allow HTTPS from inside VPC"
+  vpc_id      = aws_vpc.ecs_test_vpc.id
+
+  ingress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ecs_test_lambda_sg.id]
+  }
+}
+
+# Update your EXISTING RDS Security Group
+resource "aws_security_group_rule" "ece_test_allow_lambda_rotation" {
+  type                     = "ingress"
+  from_port                = 3306
+  to_port                  = 3306
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.ecs_test_lambda_sg.id
+  security_group_id        = aws_security_group.ecs_test_db_sg.id # Your existing RDS SG
+}
