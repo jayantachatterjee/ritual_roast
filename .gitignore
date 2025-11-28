@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 .terraform/
+=======
+.terraform/
+terraform.*
+.DS_Store
+>>>>>>> 12f07720b1f1ad48982fb6e7fc5160daeb4fd99b
