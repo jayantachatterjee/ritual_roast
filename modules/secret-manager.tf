@@ -9,7 +9,7 @@ resource "random_password" "ecs_test_master_password" {
 
 # --- 2. Create the Secret Container ---
 resource "aws_secretsmanager_secret" "ecs_test_rds_credentials" {
-  name        = "ritualroast-db-secret"
+  name        = "ritualroast-ecs-db-secret"
   description = "Credentials for the private RDS MySQL instance"
   
   # Allow the secret to be deleted immediately for testing (set to 7-30 days for prod)

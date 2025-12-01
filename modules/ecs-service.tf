@@ -1,7 +1,7 @@
-resource "aws_ecs_service" "ecs_test_cluster" {
+resource "aws_ecs_service" "ecs_test_service" {
   name            = "my-app-service"
   cluster         = aws_ecs_cluster.ecs_test_cluster.id
-  # task_definition = aws_ecs_task_definition.ecs_test_cluster.arn
+  task_definition = aws_ecs_task_definition.ecs_test_task_definition.arn
   launch_type     = "FARGATE"
   
   # Allow Auto Scaling to manage the count, preventing Terraform from resetting it
