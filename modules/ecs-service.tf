@@ -79,6 +79,64 @@ resource "aws_iam_role_policy" "ecs_task_custom_policy" {
   })
 }
 
+# --- 1. Create the IAM Role ---
+# This allows the ECS service (Fargate) to assume this role.
+resource "aws_iam_role" "ecs_execution_role" {
+  name = "ecs-task-execution-newrole"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+# --- 2. Policy A: Connect to ECR & CloudWatch (AWS Managed) ---
+# AWS provides a pre-made policy for ECR Pulls and Logging.
+# We just need to attach it.
+resource "aws_iam_role_policy_attachment" "ecs_execution_policy_attachment" {
+  role       = aws_iam_role.ecs_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+# --- 3. Policy B: Access Secrets Manager (Customer Managed) ---
+# You need a custom policy to specifically allow reading your secrets.
+resource "aws_iam_policy" "secrets_access_policy" {
+  name        = "ecs-secrets-access-policy"
+  description = "Allow ECS to read secrets from Secrets Manager"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "kms:Decrypt" # Required if your secret uses a custom KMS key
+        ]
+        # Best Practice: Restrict to specific secrets to reduce blast radius
+        Resource = [
+          aws_secretsmanager_secret.ecs_test_rds_credentials.arn
+          # Add other secret ARNs here if needed
+        ]
+      }
+    ]
+  })
+}
+
+# --- 4. Attach Policy B to the Role ---
+resource "aws_iam_role_policy_attachment" "ecs_secrets_attachment" {
+  role       = aws_iam_role.ecs_execution_role.name
+  policy_arn = aws_iam_policy.secrets_access_policy.arn
+}
+
 # --- ECS Task Definition ---
 resource "aws_ecs_task_definition" "ecs_test_task_definition" {
   family                   = "my-app-task"
@@ -87,6 +145,7 @@ resource "aws_ecs_task_definition" "ecs_test_task_definition" {
   cpu                      = "256"
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_execution_role.arn
 
   container_definitions = jsonencode([
     {
