@@ -131,7 +131,6 @@ resource "aws_codebuild_webhook" "ecs_test_codebuild_webhook" {
   }
 }
 
-
 # --- 1. ECR API Endpoint (For Authentication) ---
 resource "aws_vpc_endpoint" "ecr_api" {
   vpc_id              = aws_vpc.ecs_test_vpc.id

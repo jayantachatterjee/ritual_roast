@@ -9,6 +9,7 @@ resource "aws_ecs_service" "ecs_test_service" {
     ignore_changes = [desired_count] 
   }
 
+
   # Link to the ALB Target Group created above
   load_balancer {
     target_group_arn = aws_lb_target_group.ecs_test_target_group.arn
