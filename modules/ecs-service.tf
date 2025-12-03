@@ -18,7 +18,7 @@ resource "aws_ecs_service" "ecs_test_service" {
   }
 
   network_configuration {
-    subnets          = aws_subnet.ecs_test_private_app_subnet[*].id
+    subnets          = aws_subnet.cs_test_public_subnet[*].id
     security_groups  = [aws_security_group.ecs_test_app_sg.id]
     assign_public_ip = false
   }
