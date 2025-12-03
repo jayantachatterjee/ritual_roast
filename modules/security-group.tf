@@ -97,21 +97,21 @@ resource "aws_security_group" "ecs_test_vpc_endpoint_sg" {
     from_port       = 443
     to_port         = 443
     protocol        = "tcp"
-    security_groups = [aws_security_group.ecs_test_lambda_sg.id, aws_security_group.ecs_test_vpc_endpoint_sg.id]
+    security_groups = [aws_security_group.ecs_test_lambda_sg.id]
   }
 }
 
 # Update the Security Group used by your VPC Endpoints
-#resource "aws_security_group_rule" "vpc_ingress_from_ecs" {
-#  security_group_id        = aws_security_group.ecs_test_vpc_endpoint_sg.id
-#  type                     = "ingress"
-#  from_port                = 443
-#  to_port                  = 443
-#  protocol                 = "tcp"
+resource "aws_security_group_rule" "vpc_ingress_from_ecs" {
+  security_group_id        = aws_security_group.ecs_test_vpc_endpoint_sg.id
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
   
   # Allow traffic from the ECS Task Security Group
-#  source_security_group_id = aws_security_group.ecs_test_app_sg.id
-#}
+  source_security_group_id = aws_security_group.ecs_test_app_sg.id
+}
 
 # Update your EXISTING RDS Security Group
 resource "aws_security_group_rule" "ece_test_allow_lambda_rotation" {
