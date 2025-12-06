@@ -1,3 +1,3 @@
-module "aws_vpc" {
-  source = "./modules"
+module "aws_module" {
+  source = "./modules/aws-modules"
 }

@@ -46,6 +46,33 @@ resource "aws_security_group" "ecs_test_app_sg" {
             security_groups = [aws_security_group.ecs_test_lb_sg.id]
         }
     }
+
+    # CRITICAL: Allow outbound HTTPS to VPC endpoints (ECR API, ECR Docker, S3)
+    egress {
+        from_port   = 443
+        to_port     = 443
+        protocol    = "tcp"
+        cidr_blocks = ["10.0.0.0/16"]
+        description = "Allow HTTPS to VPC endpoints (ECR, S3)"
+    }
+
+    # Allow outbound DNS for resolving VPC endpoint DNS names
+    egress {
+        from_port   = 53
+        to_port     = 53
+        protocol    = "udp"
+        cidr_blocks = ["10.0.0.0/16"]
+        description = "Allow DNS queries"
+    }
+
+    # Allow outbound to RDS if needed
+    egress {
+        from_port   = 3306
+        to_port     = 3306
+        protocol    = "tcp"
+        cidr_blocks = ["10.0.0.0/16"]
+        description = "Allow MySQL to RDS"
+    }
 }
 
 resource "aws_security_group" "ecs_test_db_sg" {
