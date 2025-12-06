@@ -18,7 +18,7 @@ resource "aws_ecs_service" "ecs_test_service" {
   }
 
   network_configuration {
-    subnets          = aws_subnet.ecs_test_public_subnet[*].id
+    subnets          = aws_subnet.ecs_test_private_app_subnet[*].id
     security_groups  = [aws_security_group.ecs_test_app_sg.id]
     assign_public_ip = false
   }
@@ -78,7 +78,36 @@ resource "aws_iam_role_policy" "ecs_task_custom_policy" {
       }
     ]
   })
+
 }
+
+
+resource "aws_iam_role_policy" "ecs_task_ecr_read_policy" {
+  name   = "ecs-task-ecr-read-policy"
+  role   = aws_iam_role.ecs_task_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:DescribeImages"
+        ]
+        Resource = "${aws_ecr_repository.ecs_test_my_app_repo.arn}"
+      },
+      {
+        Effect = "Allow"
+        Action = "ecr:GetAuthorizationToken"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+
 
 # --- 1. Create the IAM Role ---
 # This allows the ECS service (Fargate) to assume this role.
