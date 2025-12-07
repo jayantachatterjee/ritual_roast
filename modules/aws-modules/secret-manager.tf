@@ -11,9 +11,9 @@ resource "random_password" "ecs_test_master_password" {
 resource "aws_secretsmanager_secret" "ecs_test_rds_credentials" {
   name        = "ritualroast-ecs-db-secret"
   description = "Credentials for the private RDS MySQL instance"
-  
+
   # Allow the secret to be deleted immediately for testing (set to 7-30 days for prod)
-  recovery_window_in_days = 0 
+  recovery_window_in_days = 0
 }
 
 # --- 3. Store the Secret Data ---
@@ -23,7 +23,7 @@ resource "aws_secretsmanager_secret_version" "ecs_test_rds_credentials" {
   secret_string = jsonencode({
     username = aws_db_instance.ecs_test_db_instance.username
     password = random_password.ecs_test_master_password.result
-    engine   = "mysql"        
+    engine   = "mysql"
     host     = aws_db_instance.ecs_test_db_instance.address
     port     = 3306
     dbname   = aws_db_instance.ecs_test_db_instance.db_name
@@ -43,7 +43,7 @@ resource "aws_serverlessapplicationrepository_cloudformation_stack" "rotate_stac
   capabilities     = data.aws_serverlessapplicationrepository_application.rotator.required_capabilities
 
   parameters = {
-    endpoint            = "https://secretsmanager.ap-south-1.amazonaws.com"
+    endpoint            = "https://secretsmanager.ap-southeast-1.amazonaws.com"
     functionName        = "MyRDS-Rotator-Function"
     vpcSubnetIds        = join(",", aws_db_subnet_group.ecs_test_db_subnet_group.subnet_ids) # Must be same subnets as RDS
     vpcSecurityGroupIds = aws_security_group.ecs_test_db_sg.id
@@ -52,23 +52,10 @@ resource "aws_serverlessapplicationrepository_cloudformation_stack" "rotate_stac
 
 # --- 5. Attach Rotation to Secret ---
 resource "aws_secretsmanager_secret_rotation" "rotation" {
-  secret_id           = aws_secretsmanager_secret.ecs_test_rds_credentials.id   
+  secret_id           = aws_secretsmanager_secret.ecs_test_rds_credentials.id
   rotation_lambda_arn = aws_serverlessapplicationrepository_cloudformation_stack.rotate_stack.outputs.RotationLambdaARN
 
   rotation_rules {
     automatically_after_days = 30
   }
-}
-
-# --- 6. VPC Endpoint (CRITICAL) ---
-# Allows the private Lambda to talk to Secrets Manager without internet
-data "aws_region" "current" {}
-
-resource "aws_vpc_endpoint" "secretsmanager" {
-  vpc_id              = aws_vpc.ecs_test_vpc.id
-  service_name        = "com.amazonaws.ap-southeast-1.secretsmanager"
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = aws_subnet.ecs_test_private_db_subnet[*].id
-  private_dns_enabled = true
-  security_group_ids  = [aws_security_group.ecs_test_vpc_endpoint_sg.id] 
 }

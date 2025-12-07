@@ -3,10 +3,10 @@ resource "aws_ecs_service" "ecs_test_service" {
   cluster         = aws_ecs_cluster.ecs_test_cluster.id
   task_definition = aws_ecs_task_definition.ecs_test_task_definition.arn
   launch_type     = "FARGATE"
-  
+
   # Allow Auto Scaling to manage the count, preventing Terraform from resetting it
   lifecycle {
-    ignore_changes = [desired_count] 
+    ignore_changes = [desired_count]
   }
 
 
@@ -14,7 +14,7 @@ resource "aws_ecs_service" "ecs_test_service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.ecs_test_target_group.arn
     container_name   = "ecs-test-my-app-container" # Must match name in Task Definition
-    container_port   = 80               # Must match port in Task Definition
+    container_port   = 80                          # Must match port in Task Definition
   }
 
   network_configuration {
@@ -61,8 +61,8 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy" {
 
 # --- Custom IAM Policy for CloudWatch Logs ---
 resource "aws_iam_role_policy" "ecs_task_custom_policy" {
-  name   = "ecs-task-custom-policy"
-  role   = aws_iam_role.ecs_task_execution_role.id
+  name = "ecs-task-custom-policy"
+  role = aws_iam_role.ecs_task_execution_role.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -83,8 +83,8 @@ resource "aws_iam_role_policy" "ecs_task_custom_policy" {
 
 
 resource "aws_iam_role_policy" "ecs_task_ecr_read_policy" {
-  name   = "ecs-task-ecr-read-policy"
-  role   = aws_iam_role.ecs_task_execution_role.id
+  name = "ecs-task-ecr-read-policy"
+  role = aws_iam_role.ecs_task_execution_role.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -99,8 +99,8 @@ resource "aws_iam_role_policy" "ecs_task_ecr_read_policy" {
         Resource = "${aws_ecr_repository.ecs_test_my_app_repo.arn}"
       },
       {
-        Effect = "Allow"
-        Action = "ecr:GetAuthorizationToken"
+        Effect   = "Allow"
+        Action   = "ecr:GetAuthorizationToken"
         Resource = "*"
       }
     ]
@@ -182,7 +182,7 @@ resource "aws_ecs_task_definition" "ecs_test_task_definition" {
       name      = "ecs-test-my-app-container"
       image     = "${aws_ecr_repository.ecs_test_my_app_repo.repository_url}:latest"
       essential = true
-      
+
       portMappings = [
         {
           containerPort = 80
@@ -199,7 +199,7 @@ resource "aws_ecs_task_definition" "ecs_test_task_definition" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
-      
+
       environment = [
         { name = "DB_DATABASE", value = "ritualroast" },
         { name = "DB_SERVER", value = aws_db_instance.ecs_test_db_instance.address },
