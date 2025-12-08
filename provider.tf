@@ -6,7 +6,7 @@ provider "aws" {
 # --- 1. S3 Bucket for State Storage ---
 resource "aws_s3_bucket" "terraform_state" {
   # This name must be GLOBALLY unique
-  bucket        = "my-unique-app-ritual-roast-terraform-state-12345" 
+  bucket        = "my-unique-app-ritual-roast-terraform-state-123456" 
   # force_destroy = true # Allow deletion even if not empty (Be careful in Prod!)
 }
 

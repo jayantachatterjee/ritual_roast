@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     # Replace with the values from Step 1
-    bucket         = "my-unique-app-ritual-roast-terraform-state-12345"
+    bucket         = "my-unique-app-ritual-roast-terraform-state-123456"
     key            = "prod/terraform.tfstate" # The path within the bucket
     region         = "ap-southeast-1"
     
