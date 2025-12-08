@@ -6,7 +6,7 @@ terraform {
     region         = "ap-southeast-1"
     
     # Enable Locking
-    dynamodb_table = "my-app-terraform-locks"
+    dynamodb_table = "tf-state-lock"
     encrypt        = true
   }
 }
