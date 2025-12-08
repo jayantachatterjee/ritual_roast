@@ -1,4 +1,5 @@
-.terraform/
+.terraform/modules
+.terraform/providers
 terraform.tfstate
 terraform.tfstate.backup
 .terraform.lock.hcl
