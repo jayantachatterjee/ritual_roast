@@ -2,22 +2,13 @@ name: 'Terraform'
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-
-permissions:
-  contents: read
+    branches: 
+       - "main"  # Trigger on push to main branch
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: "Terraform Apply"
     runs-on: ubuntu-latest
-    environment: production
-
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
 
     # Set credentials as Global Environment Variables
     # Terraform automatically looks for these specific names.
@@ -34,7 +25,7 @@ jobs:
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.6
 
