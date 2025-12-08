@@ -2,7 +2,7 @@ provider "aws" {
   region = "ap-southeast-1"
 }
 
-
+/*
 # --- 1. S3 Bucket for State Storage ---
 resource "aws_s3_bucket" "terraform_state" {
   # This name must be GLOBALLY unique
@@ -36,7 +36,8 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
-}
+} 
+*/
 
 # --- 2. DynamoDB Table for State Locking ---
 resource "aws_dynamodb_table" "terraform_locks" {
