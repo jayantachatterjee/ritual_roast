@@ -43,7 +43,8 @@ resource "aws_iam_role_policy" "codebuild_policy" {
         Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:PutLogEvents"
+          "logs:PutLogEvents",
+          "ecs:UpdateService"
         ]
       },
       {
@@ -112,7 +113,11 @@ resource "aws_codebuild_project" "ecs_test_docker_builder" {
   }
 }
 
-# --- 5. Trigger CodeBuild on CodeCommit Push (Optional) ---
+output "codebuild_project_name" {
+  value = aws_codebuild_project.ecs_test_docker_builder.name
+}
+
+/*# --- 5. Trigger CodeBuild on CodeCommit Push (Optional) ---
 resource "aws_codebuild_webhook" "ecs_test_codebuild_webhook" {
   project_name = aws_codebuild_project.ecs_test_docker_builder.name
 
@@ -129,4 +134,5 @@ resource "aws_codebuild_webhook" "ecs_test_codebuild_webhook" {
       pattern = "^refs/heads/main$"
     }
   }
-}
+} */
+

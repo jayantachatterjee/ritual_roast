@@ -28,7 +28,15 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Writing image definitions file...
       # Optional: If you are deploying to ECS, this file is required
-      - printf '[{"name":"container-name","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"container-name","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json 
+      # Force ECS Deployment ---
+      - echo Updating ECS Service...
+      # This forces the service to stop old tasks and start new ones with the new image
+      - aws ecs update-service --cluster my-app-cluster --service my-app-service --force-new-deployment
+      # (Optional) You can keep or remove the imagedefinitions.json part below
+      # It is only strictly needed if you use AWS CodePipeline, but harmless to keep.
+      - echo Writing image definitions file...
+      - printf '[{"name":"my-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
     files: imagedefinitions.json
