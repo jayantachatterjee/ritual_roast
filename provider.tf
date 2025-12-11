@@ -37,7 +37,7 @@ resource "aws_s3_bucket_public_access_block" "public_access" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 } 
-*/
+
 
 # --- 2. DynamoDB Table for State Locking ---
 resource "aws_dynamodb_table" "terraform_locks" {
@@ -49,4 +49,4 @@ resource "aws_dynamodb_table" "terraform_locks" {
     name = "LockID"
     type = "S"
   }
-}
+}*/
