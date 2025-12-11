@@ -36,7 +36,7 @@ phases:
       # (Optional) You can keep or remove the imagedefinitions.json part below
       # It is only strictly needed if you use AWS CodePipeline, but harmless to keep.
       - echo Writing image definitions file...
-      - printf '[{"name":"my-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - printf '[{"name":"ecs-test-my-app-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 
 artifacts:
     files: imagedefinitions.json
