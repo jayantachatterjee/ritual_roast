@@ -28,7 +28,7 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Writing image definitions file...
       # Optional: If you are deploying to ECS, this file is required
-      - printf '[{"name":"container-name","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json 
+      - printf '[{"name":"ecs-test-my-app-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json 
       # Force ECS Deployment ---
       - echo Updating ECS Service...
       # This forces the service to stop old tasks and start new ones with the new image
